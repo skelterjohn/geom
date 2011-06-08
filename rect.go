@@ -5,7 +5,7 @@ type Rect struct {
 }
 
 func (r *Rect) Contains(p Point) bool {
-	return p.PPOf(r.Min) && p.MMOf(r.Max)
+	return p.QuadPP(r.Min) && p.QuadMM(r.Max)
 }
 
 func (r *Rect) Translate(offset Point) {
@@ -13,11 +13,21 @@ func (r *Rect) Translate(offset Point) {
 	r.Max = r.Max.Plus(offset)
 }
 
-func (r *Rect) ExpandToContain(p Point) {
+func (r *Rect) Scale(factor float64) {
+	r.Min = r.Min.Times(factor)
+	r.Max = r.Max.Times(factor)
+}
+
+func (r *Rect) ExpandToContainPoint(p Point) {
 	r.Min.X = minf(r.Min.X, p.X)
 	r.Min.Y = minf(r.Min.Y, p.Y)
 	r.Max.X = maxf(r.Max.X, p.X)
 	r.Max.Y = maxf(r.Max.Y, p.Y)
+}
+
+func (r *Rect) ExpandToContainRect(q *Rect) {
+	r.ExpandToContainPoint(q.Min)
+	r.ExpandToContainPoint(q.Max)
 }
 
 func RectsIntersect(r1, r2 *Rect) bool {

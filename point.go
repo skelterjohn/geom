@@ -43,18 +43,18 @@ func (p Point) Times(s float64) (r Point) {
 	return
 }
 
-func (p Point) PPOf(q Point) bool {
+func (p Point) QuadPP(q Point) bool {
 	return q.X >= p.X && q.Y >= p.Y
 }
 
-func (p Point) PMOf(q Point) bool {
+func (p Point) QuadPM(q Point) bool {
 	return q.X >= p.X && q.Y <= p.Y
 }
 
-func (p Point) MPOf(q Point) bool {
+func (p Point) QuadMP(q Point) bool {
 	return q.X <= p.X && q.Y >= p.Y
 }
 
-func (p Point) MMOf(q Point) bool {
+func (p Point) QuadMM(q Point) bool {
 	return q.X <= p.X && q.Y <= p.Y
 }

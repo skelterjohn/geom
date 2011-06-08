@@ -1,18 +1,22 @@
-package geom
+package qtree
 
-type QTree struct {
+import (
+	"github.com/skelterjohn/geom"
+)
+
+type Tree struct {
 	height int
 
-	Bounds    Rect
-	Partition Point
+	Bounds    *geom.Rect
+	Partition geom.Point
 
-	Subtrees [4]*QTree
+	Subtrees [4]*Tree
 
-	Elements map[Bounded]bool
+	Elements map[geom.Bounded]bool
 }
 
-func NewQTree(height int, bounds Rect) (me *QTree) {
-	me = &QTree{
+func New(height int, bounds *geom.Rect) (me *Tree) {
+	me = &Tree{
 		height:    height,
 		Bounds:    bounds,
 		Partition: bounds.Min.Plus(bounds.Max).Times(0.5),
@@ -20,8 +24,8 @@ func NewQTree(height int, bounds Rect) (me *QTree) {
 	return
 }
 
-func (me *QTree) Insert(element Bounded) (inserted bool) {
-	if !RectsIntersect(&me.Bounds, element.Bounds()) {
+func (me *Tree) Insert(element geom.Bounded) (inserted bool) {
+	if !geom.RectsIntersect(me.Bounds, element.Bounds()) {
 		return
 	}
 
@@ -34,7 +38,7 @@ func (me *QTree) Insert(element Bounded) (inserted bool) {
 
 	for i, t := range me.Subtrees {
 		if t == nil {
-			subbounds := me.Bounds
+			subbounds := *me.Bounds
 			switch i {
 			case 0:
 				subbounds.Min.X = me.Partition.X
@@ -49,7 +53,7 @@ func (me *QTree) Insert(element Bounded) (inserted bool) {
 				subbounds.Max.X = me.Partition.X
 				subbounds.Max.Y = me.Partition.Y
 			}
-			t = NewQTree(me.height-1, subbounds)
+			t = New(me.height-1, &subbounds)
 			me.Subtrees[i] = t
 		}
 
@@ -59,8 +63,8 @@ func (me *QTree) Insert(element Bounded) (inserted bool) {
 	return
 }
 
-func (me *QTree) Remove(element Bounded) {
-	if !RectsIntersect(&me.Bounds, element.Bounds()) {
+func (me *Tree) Remove(element geom.Bounded) {
+	if !geom.RectsIntersect(me.Bounds, element.Bounds()) {
 		return
 	}
 	me.Elements[element] = false, false
@@ -72,8 +76,8 @@ func (me *QTree) Remove(element Bounded) {
 	}
 }
 
-func (me *QTree) Collect(bounds *Rect, collection map[Bounded]bool) {
-	if !RectsIntersect(bounds, &me.Bounds) {
+func (me *Tree) Collect(bounds *geom.Rect, collection map[geom.Bounded]bool) {
+	if !geom.RectsIntersect(bounds, me.Bounds) {
 		return
 	}
 
@@ -83,7 +87,7 @@ func (me *QTree) Collect(bounds *Rect, collection map[Bounded]bool) {
 			if !ok {
 				panic("forgot to delete element properly")
 			}
-			if RectsIntersect(bounds, elem.Bounds()) {
+			if geom.RectsIntersect(bounds, elem.Bounds()) {
 				collection[elem] = true
 			}
 		}
