@@ -3,7 +3,7 @@ package geom
 
 type Path struct {
 	vertices []Point
-	bounds    Rect
+	bounds   Rect
 }
 
 //uncomment to check interface fulfillment
