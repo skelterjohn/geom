@@ -9,6 +9,25 @@ type Path struct {
 //uncomment to check interface fulfillment
 //var _ Bounded = &Path{}
 
+func (p *Path) Equals(oi interface{}) bool {
+	o, ok := oi.(*Path)
+	if !ok { return false }
+	
+	if len(p.vertices) != len(o.vertices) { return false }
+	
+	for i := range p.vertices {
+		if !p.vertices[i].Equals(o.vertices[i])	{
+			return false
+		}
+	}
+	
+	return true
+}
+
+func (p *Path) Length() int {
+	return len(p.vertices)
+}
+
 func (p *Path) AddVertex(v Point) {
 	if len(p.vertices) == 0 {
 		p.bounds = Rect{
@@ -19,6 +38,12 @@ func (p *Path) AddVertex(v Point) {
 		p.bounds.ExpandToContainPoint(v)
 	}
 	p.vertices = append(p.vertices, v)
+}
+
+func (p *Path) InsertVertexAfter(v Point, index int) {
+	p.vertices = append(p.vertices, v)
+	copy(p.vertices[index+1:], p.vertices[index:len(p.vertices)-1])
+	p.vertices[index] = v
 }
 
 func (p *Path) Bounds() (bounds *Rect) {
