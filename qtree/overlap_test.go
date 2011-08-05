@@ -32,4 +32,3 @@ func col3() (items []Item) {
 	items = append(items, Item(&geom.Rect{geom.Point{2, 10}, geom.Point{3, 11}}))
 	return
 }
-

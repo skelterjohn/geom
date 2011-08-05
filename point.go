@@ -14,7 +14,7 @@ type Point struct {
 
 func (p *Point) Hashcode() (hash uint64) {
 	x, y := uint64(p.X), uint64(p.Y)
-	hash = x+y
+	hash = x + y
 	return
 }
 
@@ -35,8 +35,8 @@ func (p *Point) Translate(offset Point) {
 }
 
 func (p *Point) Rotate(rad float64) {
-	p.X = p.X * math.Cos(rad) - p.Y * math.Sin(rad)
-	p.Y = p.X * math.Sin(rad) + p.Y * math.Cos(rad)
+	p.X = p.X*math.Cos(rad) - p.Y*math.Sin(rad)
+	p.Y = p.X*math.Sin(rad) + p.Y*math.Cos(rad)
 }
 
 func (p *Point) Scale(xfactor, yfactor float64) {

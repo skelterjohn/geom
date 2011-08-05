@@ -23,12 +23,12 @@ func TestRectsIntersect(t *testing.T) {
 	if !RectsIntersect(r1, r2) {
 		t.Error("intersect")
 	}
-	
+
 	r1 = &Rect{Point{325, 325}, Point{650, 650}}
 	r2 = &Rect{Point{200, 500}, Point{450, 750}}
-	
+
 	Debug = true
-	
+
 	if !r1.Min.QuadPP(r2.Min) {
 		t.Error("QuadPP2")
 	}
@@ -41,5 +41,5 @@ func TestRectsIntersect(t *testing.T) {
 	if !RectsIntersect(r1, r2) {
 		t.Error("intersect2")
 	}
-	
+
 }

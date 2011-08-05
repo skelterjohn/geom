@@ -19,16 +19,16 @@ func dbg(format string, args ...interface{}) {
 }
 
 type Config struct {
-	SplitCount int "Exclusive upper bound before splitting a node"
+	SplitCount     int     "Exclusive upper bound before splitting a node"
 	SplitSizeRatio float64 "Elements must be small enough to split"
-	Height int "Max depth of search tree"
+	Height         int     "Max depth of search tree"
 }
 
 func ConfigDefault() (cfg Config) {
 	cfg.SplitCount = 5
 	cfg.SplitSizeRatio = 0.5
 	cfg.Height = 10
-	return	
+	return
 }
 
 type Item interface {
@@ -38,13 +38,13 @@ type Item interface {
 
 type Tree struct {
 	height int
-	cfg Config
+	cfg    Config
 
 	Count int
 
 	//a promise that nothing added will be outside this bounds
-	UpperBounds    *geom.Rect
-	
+	UpperBounds *geom.Rect
+
 	//smallest rect that contains all current items
 	Bounds *geom.Rect
 
@@ -52,15 +52,15 @@ type Tree struct {
 
 	Subtrees [4]*Tree
 
-	Elements map[Item]bool
+	Elements    map[Item]bool
 	BigElements map[Item]bool
 }
 
 func New(cfg Config, bounds *geom.Rect) (me *Tree) {
 	me = &Tree{
-	cfg:       cfg,
-	UpperBounds:    bounds,
-	Partition: bounds.Min.Plus(bounds.Max).Times(0.5),
+		cfg:         cfg,
+		UpperBounds: bounds,
+		Partition:   bounds.Min.Plus(bounds.Max).Times(0.5),
 	}
 	nr := geom.NilRect()
 	me.Bounds = &nr
@@ -68,8 +68,8 @@ func New(cfg Config, bounds *geom.Rect) (me *Tree) {
 }
 
 func (me *Tree) IsBig(bounds *geom.Rect) bool {
-	return bounds.Width() >= me.cfg.SplitSizeRatio * me.UpperBounds.Width() ||
-	       bounds.Height() >= me.cfg.SplitSizeRatio * me.UpperBounds.Height()
+	return bounds.Width() >= me.cfg.SplitSizeRatio*me.UpperBounds.Width() ||
+		bounds.Height() >= me.cfg.SplitSizeRatio*me.UpperBounds.Height()
 }
 
 func (me *Tree) insertSubTrees(element Item) (inserted bool) {
@@ -98,7 +98,7 @@ func (me *Tree) insertSubTrees(element Item) (inserted bool) {
 
 		inserted = inserted || t.Insert(element)
 	}
-	
+
 	return
 }
 
@@ -127,9 +127,13 @@ func (me *Tree) Find(element Item) (found Item, ok bool) {
 		return
 	}
 	for _, t := range me.Subtrees {
-		if t == nil { continue }
+		if t == nil {
+			continue
+		}
 		found, ok = t.Find(element)
-		if ok { return }
+		if ok {
+			return
+		}
 	}
 	return
 }
@@ -146,7 +150,7 @@ func (me *Tree) FindOrInsert(element Item) (found Item, inserted bool) {
 		dbg("doesn't belong in %v", *me.UpperBounds)
 		return
 	}
-	
+
 	if me.IsBig(element.Bounds()) {
 		if me.BigElements == nil {
 			me.BigElements = make(map[Item]bool)
@@ -164,7 +168,7 @@ func (me *Tree) FindOrInsert(element Item) (found Item, inserted bool) {
 		inserted = true
 		return
 	}
-	
+
 	if me.cfg.Height == 0 {
 		if me.Elements == nil {
 			me.Elements = make(map[Item]bool)
@@ -172,12 +176,12 @@ func (me *Tree) FindOrInsert(element Item) (found Item, inserted bool) {
 	} else {
 		if me.Elements != nil && len(me.Elements) == me.cfg.SplitCount {
 			for elem := range me.Elements {
-				me.insertSubTrees(elem)	
+				me.insertSubTrees(elem)
 			}
 			me.Elements = nil
 		}
 	}
-	
+
 	if me.Subtrees[0] != nil {
 		dbg("looking through subtrees")
 		for _, t := range me.Subtrees {
@@ -191,10 +195,10 @@ func (me *Tree) FindOrInsert(element Item) (found Item, inserted bool) {
 				inserted = insertedInSubtree
 			}
 		}
-		
+
 		return
 	}
-	
+
 	if me.Elements != nil {
 		dbg("looking through Element")
 		for elem := range me.Elements {
@@ -208,7 +212,7 @@ func (me *Tree) FindOrInsert(element Item) (found Item, inserted bool) {
 	} else {
 		me.Elements = make(map[Item]bool)
 	}
-	
+
 	me.Elements[element] = true
 	found = element
 	inserted = true
@@ -221,7 +225,7 @@ func (me *Tree) Insert(element Item) (inserted bool) {
 		str = "*"
 	}
 	dbg("inserting in %v%s", *me.Bounds, str)
-	
+
 	if !geom.RectsIntersect(me.UpperBounds, element.Bounds()) {
 		return
 	}
@@ -230,16 +234,16 @@ func (me *Tree) Insert(element Item) (inserted bool) {
 		me.Bounds.ExpandToContainRect(bounds)
 		me.Count++
 	}(element.Bounds())
-	
+
 	inserted = true
-	
+
 	//if this element is too big, stop here
 	if me.IsBig(element.Bounds()) {
 		if me.BigElements == nil {
 			me.BigElements = make(map[Item]bool)
 		}
 		me.BigElements[element] = true
-		return	
+		return
 	}
 
 	//if we're at the bottom, stop here
@@ -250,38 +254,38 @@ func (me *Tree) Insert(element Item) (inserted bool) {
 		me.Elements[element] = true
 		return
 	}
-	
+
 	//if we've got enough at this level, break into subtrees
 	if me.Elements != nil && len(me.Elements) == me.cfg.SplitCount {
 		for elem := range me.Elements {
-			me.insertSubTrees(elem)	
+			me.insertSubTrees(elem)
 		}
 		me.Elements = nil
 	}
-	
+
 	//if we already have subtrees, insert into them
 	if me.Subtrees[0] != nil {
 		me.insertSubTrees(element)
 		return
 	}
-	
+
 	//no subtrees, stop here
 	if me.Elements == nil {
 		me.Elements = make(map[Item]bool)
 	}
 	me.Elements[element] = true
-	
+
 	return
 }
 
 func (me *Tree) Remove(element Item) (removed bool) {
 	dbg("removing %v", element)
 	if Debug {
-		println(element)	
+		println(element)
 	}
 	Indent++
-	defer func() {Indent--}()
-	
+	defer func() { Indent-- }()
+
 	if !geom.RectsIntersect(me.UpperBounds, element.Bounds()) {
 		dbg("out of bounds")
 		return
@@ -313,10 +317,10 @@ func (me *Tree) Remove(element Item) (removed bool) {
 			}
 		}
 	}()
-	
+
 	dbg("BigElements: %v", me.BigElements)
 	dbg("Elements: %v", me.Elements)
-	
+
 	if me.BigElements != nil {
 		for elem := range me.BigElements {
 			if element.Equals(elem) {
@@ -341,7 +345,7 @@ func (me *Tree) Remove(element Item) (removed bool) {
 			removed = true
 		}
 	}
-	
+
 	return
 }
 
@@ -394,13 +398,13 @@ func (me *Tree) Enumerate(collection map[Item]bool) {
 			collection[elem] = true
 		}
 	}
-	
+
 	if me.BigElements != nil {
 		for elem := range me.BigElements {
 			collection[elem] = true
 		}
 	}
-	
+
 	for _, t := range me.Subtrees {
 		if t != nil {
 			t.Enumerate(collection)
@@ -414,13 +418,13 @@ func (me *Tree) Do(foo func(x Item)) {
 			foo(elem)
 		}
 	}
-	
+
 	if me.BigElements != nil {
 		for elem := range me.BigElements {
 			foo(elem)
 		}
 	}
-	
+
 	for _, t := range me.Subtrees {
 		if t != nil {
 			t.Do(foo)
@@ -448,14 +452,14 @@ func (me *Tree) CollectInside(bounds *geom.Rect, collection map[Item]bool) {
 			}
 		}
 	}
-	
+
 	for _, t := range me.Subtrees {
 		if t == nil {
 			continue
 		}
 		t.CollectInside(bounds, collection)
 	}
-	
+
 	return
 }
 
@@ -472,8 +476,7 @@ func (me *Tree) CollectIntersect(bounds *geom.Rect, collection map[Item]bool) (f
 		}
 		Indent--
 	}()
-	
-	
+
 	if !geom.RectsIntersect(bounds, me.UpperBounds) {
 		return
 	}
@@ -514,7 +517,7 @@ func (me *Tree) CollectIntersect(bounds *geom.Rect, collection map[Item]bool) (f
 		}
 		found = t.CollectIntersect(bounds, collection) || found
 	}
-	
+
 	return
 }
 

@@ -16,14 +16,14 @@ func TestInsert(t *testing.T) {
 	p.AddVertex(Point{1, 1})
 	p.AddVertex(Point{1, 0})
 	p.InsertVertexAfter(Point{5, 0}, 2)
-	
+
 	p2 := &Polygon{}
 	p2.AddVertex(Point{0, 0})
 	p2.AddVertex(Point{0, 1})
 	p2.AddVertex(Point{5, 0})
 	p2.AddVertex(Point{1, 1})
 	p2.AddVertex(Point{1, 0})
-	
+
 	if !p.Equals(p2) {
 		t.Fail()
 	}
@@ -39,12 +39,12 @@ func TestPolyTriangularize(t *testing.T) {
 	if ok {
 		fmt.Println()
 		for _, tri := range tris {
-			fmt.Printf("triangle: %v\n", tri)	
+			fmt.Printf("triangle: %v\n", tri)
 		}
 	} else {
-		fmt.Printf("No triangles for %v\n", poly)	
+		fmt.Printf("No triangles for %v\n", poly)
 	}
-	
+
 	poly = new(Polygon)
 	poly.AddVertex(Point{0, 0})
 	poly.AddVertex(Point{1, 1})
@@ -56,12 +56,12 @@ func TestPolyTriangularize(t *testing.T) {
 	if ok {
 		fmt.Println()
 		for _, tri := range tris {
-			fmt.Printf("triangle: %v\n", tri)	
+			fmt.Printf("triangle: %v\n", tri)
 		}
 	} else {
-		fmt.Printf("No triangles for %v\n", poly)	
+		fmt.Printf("No triangles for %v\n", poly)
 	}
-	
+
 	poly = new(Polygon)
 	poly.AddVertex(Point{2, 1})
 	poly.AddVertex(Point{2, 2})
@@ -71,10 +71,10 @@ func TestPolyTriangularize(t *testing.T) {
 	if ok {
 		fmt.Println()
 		for _, tri := range tris {
-			fmt.Printf("triangle: %v\n", tri)	
+			fmt.Printf("triangle: %v\n", tri)
 		}
 	} else {
-		fmt.Printf("No triangles for %v\n", poly)	
+		fmt.Printf("No triangles for %v\n", poly)
 	}
 }
 //{44 736} {44 848} {88 848} {88 1044} {44 1044} {44 1244} {68 1244} {68 1068} {112 1068} {112 824} {68 824} {68 736}
@@ -100,12 +100,12 @@ func TestPiece(t *testing.T) {
 	if ok {
 		fmt.Println()
 		for _, tri := range tris {
-			fmt.Printf("triangle: %v\n", tri)	
+			fmt.Printf("triangle: %v\n", tri)
 		}
 	} else {
-		fmt.Printf("No triangles for %v\n", poly)	
+		fmt.Printf("No triangles for %v\n", poly)
 	}
-	
+
 	vertices = []Point{
 		Point{44, 736},
 		Point{44, 848},
@@ -129,9 +129,9 @@ func TestPiece(t *testing.T) {
 	if ok {
 		fmt.Println()
 		for _, tri := range tris {
-			fmt.Printf("triangle: %v\n", tri)	
+			fmt.Printf("triangle: %v\n", tri)
 		}
 	} else {
-		fmt.Printf("No triangles for %v\n", poly)	
+		fmt.Printf("No triangles for %v\n", poly)
 	}
 }

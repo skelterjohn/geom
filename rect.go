@@ -110,7 +110,7 @@ func RectsIntersect(r1, r2 *Rect) bool {
 		}
 		if min2 <= max1 && max2 >= max1 {
 			return true
-		} 
+		}
 		return false
 	}
 	dbg("RI(%v, %v)", r1, r2)
@@ -121,8 +121,12 @@ func RectsIntersect(r1, r2 *Rect) bool {
 }
 
 func RectsEqual(r1, r2 *Rect) bool {
-	if !r1.Min.EqualsPoint(r2.Min) { return false }
-	if !r1.Max.EqualsPoint(r2.Max) { return false }
+	if !r1.Min.EqualsPoint(r2.Min) {
+		return false
+	}
+	if !r1.Max.EqualsPoint(r2.Max) {
+		return false
+	}
 	return true
 }
 

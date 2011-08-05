@@ -5,7 +5,7 @@
 package geom
 
 type Triangle struct {
-	A, B, C Point	
+	A, B, C Point
 }
 
 func (me *Triangle) Bounds() (bounds *Rect) {
@@ -17,7 +17,9 @@ func (me *Triangle) Bounds() (bounds *Rect) {
 
 func (me *Triangle) Equals(oi interface{}) bool {
 	ot, ok := oi.(*Triangle)
-	if !ok { return false }
+	if !ok {
+		return false
+	}
 	if me.A.EqualsPoint(ot.A) {
 		if me.B.EqualsPoint(ot.B) {
 			return me.C.EqualsPoint(ot.C)
@@ -58,5 +60,5 @@ func (me *Triangle) ContainsPoint(p Point) bool {
 }
 
 func (me *Triangle) HasVertex(v Point) bool {
-	return v.EqualsPoint(me.A) || v.EqualsPoint(me.B) || v.EqualsPoint(me.C)	
+	return v.EqualsPoint(me.A) || v.EqualsPoint(me.B) || v.EqualsPoint(me.C)
 }

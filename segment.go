@@ -39,7 +39,7 @@ func (s *Segment) Intersection(t *Segment) (p Point, ok bool) {
 }
 
 func (s *Segment) Extrapolate(t float64) (p Point) {
-	p.X = s.A.X+t*(s.B.X-s.A.X)
-	p.Y = s.A.Y+t*(s.B.Y-s.A.Y)
+	p.X = s.A.X + t*(s.B.X-s.A.X)
+	p.Y = s.A.Y + t*(s.B.Y-s.A.Y)
 	return
 }

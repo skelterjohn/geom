@@ -29,7 +29,7 @@ func (p *Path) Rotate(rad float64) {
 }
 
 func (p *Path) Scale(xf, yf float64) {
-	
+
 	for i := range p.vertices {
 		p.vertices[i].Scale(xf, yf)
 	}
@@ -48,20 +48,24 @@ func (p *Path) Clone() (op *Path) {
 
 func (p *Path) Equals(oi interface{}) bool {
 	o, ok := oi.(*Path)
-	if !ok { return false }
-	
-	if len(p.vertices) != len(o.vertices) { return false }
-	
+	if !ok {
+		return false
+	}
+
+	if len(p.vertices) != len(o.vertices) {
+		return false
+	}
+
 	for i := range p.vertices {
-		if !p.vertices[i].EqualsPoint(o.vertices[i])	{
+		if !p.vertices[i].EqualsPoint(o.vertices[i]) {
 			return false
 		}
 	}
-	
+
 	return true
 }
 
-func (p *Path) Register(op *Path) (offset Point, match bool ) {
+func (p *Path) Register(op *Path) (offset Point, match bool) {
 	offset = p.bounds.Min.Minus(op.bounds.Min)
 	if len(p.vertices) != len(op.vertices) {
 		dbg("registure failure: wrong counts")
@@ -109,22 +113,22 @@ func (p *Path) Vertices() (v []Point) {
 }
 
 func (me *Path) Error(other *Path) (offset Point, error float64) {
-	
+
 	meCenter := me.bounds.Center()
 	oCenter := other.bounds.Center()
-	
+
 	offset = meCenter.Minus(oCenter)
 	if len(me.vertices) != len(other.vertices) {
 		error = math.Inf(1)
 		return
 	}
-	
+
 	for i, mv := range me.vertices {
 		ov := other.vertices[i]
 		offsetMe := mv.Minus(meCenter)
 		offsetOther := ov.Minus(oCenter)
 		error += offsetMe.DistanceFrom(offsetOther)
 	}
-	
+
 	return
 }
