@@ -1,3 +1,7 @@
+// Copyright 2009 The geom Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package geom
 
 type Triangle struct {
@@ -9,6 +13,36 @@ func (me *Triangle) Bounds() (bounds *Rect) {
 	bounds.ExpandToContainPoint(me.B)
 	bounds.ExpandToContainPoint(me.C)
 	return
+}
+
+func (me *Triangle) Equals(oi interface{}) bool {
+	ot, ok := oi.(*Triangle)
+	if !ok { return false }
+	if me.A.EqualsPoint(ot.A) {
+		if me.B.EqualsPoint(ot.B) {
+			return me.C.EqualsPoint(ot.C)
+		}
+		if me.B.EqualsPoint(ot.C) {
+			return me.C.EqualsPoint(ot.B)
+		}
+	}
+	if me.A.EqualsPoint(ot.B) {
+		if me.B.EqualsPoint(ot.A) {
+			return me.C.EqualsPoint(ot.C)
+		}
+		if me.B.EqualsPoint(ot.C) {
+			return me.C.EqualsPoint(ot.A)
+		}
+	}
+	if me.A.EqualsPoint(ot.C) {
+		if me.B.EqualsPoint(ot.B) {
+			return me.C.EqualsPoint(ot.A)
+		}
+		if me.B.EqualsPoint(ot.A) {
+			return me.C.EqualsPoint(ot.B)
+		}
+	}
+	return false
 }
 
 func (me *Triangle) Vertices() (vertices []Point) {
@@ -24,5 +58,5 @@ func (me *Triangle) ContainsPoint(p Point) bool {
 }
 
 func (me *Triangle) HasVertex(v Point) bool {
-	return v.Equals(me.A) || v.Equals(me.B) || v.Equals(me.C)	
+	return v.EqualsPoint(me.A) || v.EqualsPoint(me.B) || v.EqualsPoint(me.C)	
 }

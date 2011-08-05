@@ -7,15 +7,14 @@ import (
 )
 
 func TestInsertCollect(t *testing.T) {
-	Debug = true
 	cfg := ConfigDefault()
-	qt := New(3, &cfg, &geom.Rect{geom.Point{0, 0}, geom.Point{100, 100}})
+	qt := New(cfg, &geom.Rect{geom.Point{0, 0}, geom.Point{100, 100}})
 	
 	r := &geom.Rect{geom.Point{20, 20}, geom.Point{40, 40}}
 	qt.Insert(r)
 
-	collection := make(map[geom.Bounded]bool)
-	qt.Collect(r, collection)
+	collection := make(map[Item]bool)
+	qt.CollectIntersect(r, collection)
 	
 	fmt.Printf("%v\n", collection)
 }

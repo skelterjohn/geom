@@ -1,3 +1,7 @@
+// Copyright 2009 The geom Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package geom
 
 import (
@@ -7,6 +11,36 @@ import (
 type Path struct {
 	vertices []Point
 	bounds   Rect
+}
+
+func (p *Path) Translate(offset Point) {
+	p.bounds.Translate(offset)
+	for i := range p.vertices {
+		p.vertices[i].Translate(offset)
+	}
+}
+
+func (p *Path) Rotate(rad float64) {
+	for i := range p.vertices {
+		p.vertices[i].Rotate(rad)
+	}
+	p.bounds = Rect{p.vertices[0], p.vertices[0]}
+	p.bounds.ExpandToContain(PointChan(p.vertices[1:]))
+}
+
+func (p *Path) Scale(xf, yf float64) {
+	
+	for i := range p.vertices {
+		p.vertices[i].Scale(xf, yf)
+	}
+	p.bounds.Scale(xf, yf)
+}
+
+func (p *Path) Clone() (op *Path) {
+	op = &Path{}
+	op.bounds = *p.bounds.Clone()
+	op.vertices = append([]Point{}, p.vertices...)
+	return
 }
 
 //uncomment to check interface fulfillment
@@ -19,12 +53,28 @@ func (p *Path) Equals(oi interface{}) bool {
 	if len(p.vertices) != len(o.vertices) { return false }
 	
 	for i := range p.vertices {
-		if !p.vertices[i].Equals(o.vertices[i])	{
+		if !p.vertices[i].EqualsPoint(o.vertices[i])	{
 			return false
 		}
 	}
 	
 	return true
+}
+
+func (p *Path) Register(op *Path) (offset Point, match bool ) {
+	offset = p.bounds.Min.Minus(op.bounds.Min)
+	if len(p.vertices) != len(op.vertices) {
+		dbg("registure failure: wrong counts")
+		return // with match = false
+	}
+	for i := range p.vertices {
+		if !p.vertices[i].EqualsPoint(op.vertices[i].Plus(offset)) {
+			dbg("register failure: v1=%v v2=%v offset=%v", p.vertices[i], op.vertices[i], offset)
+			return // with match = false
+		}
+	}
+	match = true
+	return
 }
 
 func (p *Path) Length() int {
@@ -56,20 +106,6 @@ func (p *Path) Bounds() (bounds *Rect) {
 func (p *Path) Vertices() (v []Point) {
 	v = p.vertices
 	return
-}
-
-func (p *Path) Translate(offset Point) {
-	p.bounds.Translate(offset)
-	for i, v := range p.vertices {
-		p.vertices[i] = v.Plus(offset)
-	}
-}
-
-func (p *Path) Scale(factor float64) {
-	p.bounds.Scale(factor)
-	for i, v := range p.vertices {
-		p.vertices[i] = v.Times(factor)
-	}
 }
 
 func (me *Path) Error(other *Path) (offset Point, error float64) {

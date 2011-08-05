@@ -1,3 +1,7 @@
+// Copyright 2009 The geom Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package geom
 
 import (
@@ -15,10 +19,21 @@ func wrapIndex(index, length int) (i int) {
 	}
 	return
 }
+
+func (p *Polygon) Clone() (op *Polygon) {
+	op = &Polygon{*p.Path.Clone()}
+	return
+}
+
 func (p *Polygon) Equals(oi interface{}) bool {
 	o, ok := oi.(*Polygon)
 	if !ok { return false }
 	return (&p.Path).Equals(&o.Path)
+}
+
+func (p *Polygon) Register(op *Polygon) (offset Point, match bool) {
+	offset, match = p.Path.Register(&op.Path)
+	return
 }
 
 func (me *Polygon) Vertex(index int) (v Point) {

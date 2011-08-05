@@ -1,7 +1,25 @@
+// Copyright 2009 The geom Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style
+// license that can be found in the LICENSE file.
+
 package geom
+
+import (
+	"math"
+	"fmt"
+)
 
 type Rect struct {
 	Min, Max Point
+}
+
+// this rect contains nothing
+func NilRect() (r Rect) {
+	r.Min.X = math.Inf(1)
+	r.Min.Y = math.Inf(1)
+	r.Max.X = math.Inf(-1)
+	r.Max.Y = math.Inf(-1)
+	return
 }
 
 func (r *Rect) Width() float64 {
@@ -35,9 +53,26 @@ func (r *Rect) Translate(offset Point) {
 	r.Max = r.Max.Plus(offset)
 }
 
-func (r *Rect) Scale(factor float64) {
-	r.Min = r.Min.Times(factor)
-	r.Max = r.Max.Times(factor)
+func (r *Rect) Scale(xf, yf float64) {
+	r.Min.Scale(xf, yf)
+	r.Max.Scale(xf, yf)
+	if xf < 0 {
+		r.Min.X, r.Max.X = r.Max.X, r.Min.X
+	}
+	if yf < 0 {
+		r.Min.Y, r.Max.Y = r.Max.Y, r.Min.Y
+	}
+}
+
+func (r *Rect) Clone() (or *Rect) {
+	or = &Rect{r.Min, r.Max}
+	return
+}
+
+func (r *Rect) ExpandToContain(ch <-chan Point) {
+	for p := range ch {
+		r.ExpandToContainPoint(p)
+	}
 }
 
 func (r *Rect) ExpandToContainPoint(p Point) {
@@ -57,6 +92,11 @@ func (r *Rect) Bounds() (bounds *Rect) {
 	return
 }
 
+func (r *Rect) Equals(oi interface{}) bool {
+	or, ok := oi.(*Rect)
+	return ok && RectsEqual(r, or)
+}
+
 func RectsIntersect(r1, r2 *Rect) bool {
 	ov := func(min1, max1, min2, max2 float64) (overlap bool) {
 		if min1 <= min2 && max1 >= min2 {
@@ -70,7 +110,7 @@ func RectsIntersect(r1, r2 *Rect) bool {
 		}
 		if min2 <= max1 && max2 >= max1 {
 			return true
-		}
+		} 
 		return false
 	}
 	dbg("RI(%v, %v)", r1, r2)
@@ -81,7 +121,11 @@ func RectsIntersect(r1, r2 *Rect) bool {
 }
 
 func RectsEqual(r1, r2 *Rect) bool {
-	if !r1.Min.Equals(r2.Min) { return false }
-	if !r1.Max.Equals(r2.Max) { return false }
+	if !r1.Min.EqualsPoint(r2.Min) { return false }
+	if !r1.Max.EqualsPoint(r2.Max) { return false }
 	return true
+}
+
+func (r *Rect) String() string {
+	return fmt.Sprintf("{%v %v}", r.Min, r.Max)
 }
