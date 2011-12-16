@@ -10,7 +10,7 @@ type Bounded interface {
 }
 
 type Transformable interface {
-	Translate(offset Point)
+	Translate(offset Coord)
 	Rotate(rad float64)
 	Scale(xfactor, yfactor float64)
 }

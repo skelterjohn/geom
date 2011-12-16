@@ -9,8 +9,8 @@ import (
 )
 
 func TestRectsIntersect(t *testing.T) {
-	r1 := &Rect{Point{0, 0}, Point{650, 650}}
-	r2 := &Rect{Point{200, 500}, Point{450, 750}}
+	r1 := &Rect{Coord{0, 0}, Coord{650, 650}}
+	r2 := &Rect{Coord{200, 500}, Coord{450, 750}}
 	if !r1.Min.QuadPP(r2.Min) {
 		t.Error("QuadPP")
 	}
@@ -24,8 +24,8 @@ func TestRectsIntersect(t *testing.T) {
 		t.Error("intersect")
 	}
 
-	r1 = &Rect{Point{325, 325}, Point{650, 650}}
-	r2 = &Rect{Point{200, 500}, Point{450, 750}}
+	r1 = &Rect{Coord{325, 325}, Coord{650, 650}}
+	r2 = &Rect{Coord{200, 500}, Coord{450, 750}}
 
 	Debug = true
 

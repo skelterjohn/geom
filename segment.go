@@ -5,7 +5,7 @@
 package geom
 
 type Segment struct {
-	A, B Point
+	A, B Coord
 }
 
 func (s *Segment) IntersectParameters(t *Segment) (ps, pt float64) {
@@ -27,7 +27,7 @@ func (s *Segment) IntersectParameters(t *Segment) (ps, pt float64) {
 	return
 }
 
-func (s *Segment) Intersection(t *Segment) (p Point, ok bool) {
+func (s *Segment) Intersection(t *Segment) (p Coord, ok bool) {
 	ps, pt := s.IntersectParameters(t)
 
 	p.X = s.A.X + ps*(s.B.X-s.A.X)
@@ -38,7 +38,7 @@ func (s *Segment) Intersection(t *Segment) (p Point, ok bool) {
 	return
 }
 
-func (s *Segment) Extrapolate(t float64) (p Point) {
+func (s *Segment) Extrapolate(t float64) (p Coord) {
 	p.X = s.A.X + t*(s.B.X-s.A.X)
 	p.Y = s.A.Y + t*(s.B.Y-s.A.Y)
 	return

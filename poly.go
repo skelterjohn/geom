@@ -33,12 +33,12 @@ func (p *Polygon) Equals(oi interface{}) bool {
 	return (&p.Path).Equals(&o.Path)
 }
 
-func (p *Polygon) Register(op *Polygon) (offset Point, match bool) {
+func (p *Polygon) Register(op *Polygon) (offset Coord, match bool) {
 	offset, match = p.Path.Register(&op.Path)
 	return
 }
 
-func (me *Polygon) Vertex(index int) (v Point) {
+func (me *Polygon) Vertex(index int) (v Coord) {
 	v = me.vertices[wrapIndex(index, len(me.vertices))]
 	return
 }
@@ -63,8 +63,8 @@ func (me *Polygon) WindingOrder() (winding float64) {
 	return
 }
 
-func (me *Polygon) ContainsPoint(p Point) bool {
-	fakeSegment := &Segment{p, Point{p.X, p.Y + 1}}
+func (me *Polygon) ContainsCoord(p Coord) bool {
+	fakeSegment := &Segment{p, Coord{p.X, p.Y + 1}}
 
 	above := 0
 	for i := 0; i < me.Length(); i++ {
@@ -100,7 +100,7 @@ func (me *Polygon) Bisect(i, j int) (p1, p2 *Polygon) {
 	return
 }
 
-func (me *Polygon) Error(other *Polygon) (offset Point, error float64) {
+func (me *Polygon) Error(other *Polygon) (offset Coord, error float64) {
 	return me.Path.Error(&other.Path)
 }
 
@@ -135,9 +135,9 @@ func (me *Polygon) Triangles() (tris []Triangle, ok bool) {
 			}
 
 			//second check to see that it is in the interior of the polygon
-			midPoint := bisectingSegment.Extrapolate(0.5)
-			if !me.ContainsPoint(midPoint) {
-				dbg(" poly contains %v", midPoint)
+			midCoord := bisectingSegment.Extrapolate(0.5)
+			if !me.ContainsCoord(midCoord) {
+				dbg(" poly contains %v", midCoord)
 				continue v2
 			}
 

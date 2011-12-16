@@ -10,7 +10,7 @@ import (
 )
 
 type Rect struct {
-	Min, Max Point
+	Min, Max Coord
 }
 
 // this rect contains nothing
@@ -34,21 +34,21 @@ func (r *Rect) Size() (w, h float64) {
 	return r.Max.X - r.Min.X, r.Max.Y - r.Min.Y
 }
 
-func (r *Rect) Center() (center Point) {
+func (r *Rect) Center() (center Coord) {
 	center.X = 0.5 * (r.Min.X + r.Max.X)
 	center.Y = 0.5 * (r.Min.Y + r.Max.Y)
 	return
 }
 
-func (r *Rect) ContainsPoint(p Point) bool {
+func (r *Rect) ContainsCoord(p Coord) bool {
 	return r.Min.QuadPP(p) && r.Max.QuadMM(p)
 }
 
 func (r *Rect) ContainsRect(o *Rect) bool {
-	return r.ContainsPoint(o.Min) && r.ContainsPoint(o.Max)
+	return r.ContainsCoord(o.Min) && r.ContainsCoord(o.Max)
 }
 
-func (r *Rect) Translate(offset Point) {
+func (r *Rect) Translate(offset Coord) {
 	r.Min = r.Min.Plus(offset)
 	r.Max = r.Max.Plus(offset)
 }
@@ -69,13 +69,13 @@ func (r *Rect) Clone() (or *Rect) {
 	return
 }
 
-func (r *Rect) ExpandToContain(ch <-chan Point) {
+func (r *Rect) ExpandToContain(ch <-chan Coord) {
 	for p := range ch {
-		r.ExpandToContainPoint(p)
+		r.ExpandToContainCoord(p)
 	}
 }
 
-func (r *Rect) ExpandToContainPoint(p Point) {
+func (r *Rect) ExpandToContainCoord(p Coord) {
 	r.Min.X = minf(r.Min.X, p.X)
 	r.Min.Y = minf(r.Min.Y, p.Y)
 	r.Max.X = maxf(r.Max.X, p.X)
@@ -83,8 +83,8 @@ func (r *Rect) ExpandToContainPoint(p Point) {
 }
 
 func (r *Rect) ExpandToContainRect(q *Rect) {
-	r.ExpandToContainPoint(q.Min)
-	r.ExpandToContainPoint(q.Max)
+	r.ExpandToContainCoord(q.Min)
+	r.ExpandToContainCoord(q.Max)
 }
 
 func (r *Rect) Bounds() (bounds *Rect) {
@@ -121,10 +121,10 @@ func RectsIntersect(r1, r2 *Rect) bool {
 }
 
 func RectsEqual(r1, r2 *Rect) bool {
-	if !r1.Min.EqualsPoint(r2.Min) {
+	if !r1.Min.EqualsCoord(r2.Min) {
 		return false
 	}
-	if !r1.Max.EqualsPoint(r2.Max) {
+	if !r1.Max.EqualsCoord(r2.Max) {
 		return false
 	}
 	return true

@@ -9,11 +9,11 @@ import (
 )
 
 type Path struct {
-	vertices []Point
+	vertices []Coord
 	bounds   Rect
 }
 
-func (p *Path) Translate(offset Point) {
+func (p *Path) Translate(offset Coord) {
 	p.bounds.Translate(offset)
 	for i := range p.vertices {
 		p.vertices[i].Translate(offset)
@@ -25,7 +25,7 @@ func (p *Path) Rotate(rad float64) {
 		p.vertices[i].Rotate(rad)
 	}
 	p.bounds = Rect{p.vertices[0], p.vertices[0]}
-	p.bounds.ExpandToContain(PointChan(p.vertices[1:]))
+	p.bounds.ExpandToContain(CoordChan(p.vertices[1:]))
 }
 
 func (p *Path) Scale(xf, yf float64) {
@@ -39,7 +39,7 @@ func (p *Path) Scale(xf, yf float64) {
 func (p *Path) Clone() (op *Path) {
 	op = &Path{}
 	op.bounds = *p.bounds.Clone()
-	op.vertices = append([]Point{}, p.vertices...)
+	op.vertices = append([]Coord{}, p.vertices...)
 	return
 }
 
@@ -57,7 +57,7 @@ func (p *Path) Equals(oi interface{}) bool {
 	}
 
 	for i := range p.vertices {
-		if !p.vertices[i].EqualsPoint(o.vertices[i]) {
+		if !p.vertices[i].EqualsCoord(o.vertices[i]) {
 			return false
 		}
 	}
@@ -65,14 +65,14 @@ func (p *Path) Equals(oi interface{}) bool {
 	return true
 }
 
-func (p *Path) Register(op *Path) (offset Point, match bool) {
+func (p *Path) Register(op *Path) (offset Coord, match bool) {
 	offset = p.bounds.Min.Minus(op.bounds.Min)
 	if len(p.vertices) != len(op.vertices) {
 		dbg("registure failure: wrong counts")
 		return // with match = false
 	}
 	for i := range p.vertices {
-		if !p.vertices[i].EqualsPoint(op.vertices[i].Plus(offset)) {
+		if !p.vertices[i].EqualsCoord(op.vertices[i].Plus(offset)) {
 			dbg("register failure: v1=%v v2=%v offset=%v", p.vertices[i], op.vertices[i], offset)
 			return // with match = false
 		}
@@ -85,19 +85,19 @@ func (p *Path) Length() int {
 	return len(p.vertices)
 }
 
-func (p *Path) AddVertex(v Point) {
+func (p *Path) AddVertex(v Coord) {
 	if len(p.vertices) == 0 {
 		p.bounds = Rect{
 			Min: v,
 			Max: v,
 		}
 	} else {
-		p.bounds.ExpandToContainPoint(v)
+		p.bounds.ExpandToContainCoord(v)
 	}
 	p.vertices = append(p.vertices, v)
 }
 
-func (p *Path) InsertVertexAfter(v Point, index int) {
+func (p *Path) InsertVertexAfter(v Coord, index int) {
 	p.vertices = append(p.vertices, v)
 	copy(p.vertices[index+1:], p.vertices[index:len(p.vertices)-1])
 	p.vertices[index] = v
@@ -107,12 +107,12 @@ func (p *Path) Bounds() (bounds *Rect) {
 	return &p.bounds
 }
 
-func (p *Path) Vertices() (v []Point) {
+func (p *Path) Vertices() (v []Coord) {
 	v = p.vertices
 	return
 }
 
-func (me *Path) Error(other *Path) (offset Point, error float64) {
+func (me *Path) Error(other *Path) (offset Coord, error float64) {
 
 	meCenter := me.bounds.Center()
 	oCenter := other.bounds.Center()

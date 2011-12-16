@@ -48,7 +48,7 @@ type Tree struct {
 	//smallest rect that contains all current items
 	Bounds *geom.Rect
 
-	Partition geom.Point
+	Partition geom.Coord
 
 	Subtrees [4]*Tree
 
@@ -324,7 +324,7 @@ func (me *Tree) Remove(element Item) (removed bool) {
 	if me.BigElements != nil {
 		for elem := range me.BigElements {
 			if element.Equals(elem) {
-				me.BigElements[elem] = false, false
+				delete(me.BigElements, elem)
 				removed = true
 			}
 		}
@@ -332,7 +332,7 @@ func (me *Tree) Remove(element Item) (removed bool) {
 	if me.Elements != nil {
 		for elem := range me.Elements {
 			if element.Equals(elem) {
-				me.Elements[elem] = false, false
+				delete(me.Elements, elem)
 				removed = true
 			}
 		}
