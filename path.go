@@ -38,7 +38,7 @@ func (p *Path) Scale(xf, yf float64) {
 
 func (p *Path) Clone() (op *Path) {
 	op = &Path{}
-	op.bounds = *p.bounds.Clone()
+	op.bounds = p.bounds
 	op.vertices = append([]Coord{}, p.vertices...)
 	return
 }

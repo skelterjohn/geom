@@ -22,33 +22,33 @@ func NilRect() (r Rect) {
 	return
 }
 
-func (r *Rect) Width() float64 {
+func (r Rect) Width() float64 {
 	return r.Max.X - r.Min.X
 }
 
-func (r *Rect) Height() float64 {
+func (r Rect) Height() float64 {
 	return r.Max.Y - r.Min.Y
 }
 
-func (r *Rect) Size() (w, h float64) {
+func (r Rect) Size() (w, h float64) {
 	return r.Max.X - r.Min.X, r.Max.Y - r.Min.Y
 }
 
-func (r *Rect) Center() (center Coord) {
+func (r Rect) Center() (center Coord) {
 	center.X = 0.5 * (r.Min.X + r.Max.X)
 	center.Y = 0.5 * (r.Min.Y + r.Max.Y)
 	return
 }
 
-func (r *Rect) ContainsCoord(p Coord) bool {
+func (r Rect) ContainsCoord(p Coord) bool {
 	return r.Min.QuadPP(p) && r.Max.QuadMM(p)
 }
 
-func (r *Rect) ContainsRect(o *Rect) bool {
+func (r Rect) ContainsRect(o Rect) bool {
 	return r.ContainsCoord(o.Min) && r.ContainsCoord(o.Max)
 }
 
-func (r *Rect) Translate(offset Coord) {
+func (r Rect) Translate(offset Coord) {
 	r.Min = r.Min.Plus(offset)
 	r.Max = r.Max.Plus(offset)
 }
@@ -64,11 +64,6 @@ func (r *Rect) Scale(xf, yf float64) {
 	}
 }
 
-func (r *Rect) Clone() (or *Rect) {
-	or = &Rect{r.Min, r.Max}
-	return
-}
-
 func (r *Rect) ExpandToContain(ch <-chan Coord) {
 	for p := range ch {
 		r.ExpandToContainCoord(p)
@@ -82,22 +77,22 @@ func (r *Rect) ExpandToContainCoord(p Coord) {
 	r.Max.Y = maxf(r.Max.Y, p.Y)
 }
 
-func (r *Rect) ExpandToContainRect(q *Rect) {
+func (r *Rect) ExpandToContainRect(q Rect) {
 	r.ExpandToContainCoord(q.Min)
 	r.ExpandToContainCoord(q.Max)
 }
 
-func (r *Rect) Bounds() (bounds *Rect) {
+func (r Rect) Bounds() (bounds Rect) {
 	bounds = r
 	return
 }
 
-func (r *Rect) Equals(oi interface{}) bool {
-	or, ok := oi.(*Rect)
+func (r Rect) Equals(oi interface{}) bool {
+	or, ok := oi.(Rect)
 	return ok && RectsEqual(r, or)
 }
 
-func RectsIntersect(r1, r2 *Rect) bool {
+func RectsIntersect(r1, r2 Rect) bool {
 	ov := func(min1, max1, min2, max2 float64) (overlap bool) {
 		if min1 <= min2 && max1 >= min2 {
 			return true
@@ -120,7 +115,7 @@ func RectsIntersect(r1, r2 *Rect) bool {
 	return xoverlap && yoverlap
 }
 
-func RectsEqual(r1, r2 *Rect) bool {
+func RectsEqual(r1, r2 Rect) bool {
 	if !r1.Min.EqualsCoord(r2.Min) {
 		return false
 	}
@@ -130,6 +125,6 @@ func RectsEqual(r1, r2 *Rect) bool {
 	return true
 }
 
-func (r *Rect) String() string {
+func (r Rect) String() string {
 	return fmt.Sprintf("{%v %v}", r.Min, r.Max)
 }

@@ -43,10 +43,10 @@ type Tree struct {
 	Count int
 
 	//a promise that nothing added will be outside this bounds
-	UpperBounds *geom.Rect
+	UpperBounds geom.Rect
 
 	//smallest rect that contains all current items
-	Bounds *geom.Rect
+	Bounds geom.Rect
 
 	Partition geom.Coord
 
@@ -56,18 +56,17 @@ type Tree struct {
 	BigElements map[Item]bool
 }
 
-func New(cfg Config, bounds *geom.Rect) (me *Tree) {
+func New(cfg Config, bounds geom.Rect) (me *Tree) {
 	me = &Tree{
 		cfg:         cfg,
 		UpperBounds: bounds,
 		Partition:   bounds.Min.Plus(bounds.Max).Times(0.5),
 	}
-	nr := geom.NilRect()
-	me.Bounds = &nr
+	me.Bounds = geom.NilRect()
 	return
 }
 
-func (me *Tree) IsBig(bounds *geom.Rect) bool {
+func (me *Tree) IsBig(bounds geom.Rect) bool {
 	return bounds.Width() >= me.cfg.SplitSizeRatio*me.UpperBounds.Width() ||
 		bounds.Height() >= me.cfg.SplitSizeRatio*me.UpperBounds.Height()
 }
@@ -75,7 +74,7 @@ func (me *Tree) IsBig(bounds *geom.Rect) bool {
 func (me *Tree) insertSubTrees(element Item) (inserted bool) {
 	for i, t := range me.Subtrees {
 		if t == nil {
-			subbounds := *me.UpperBounds
+			subbounds := me.UpperBounds
 			switch i {
 			case 0:
 				subbounds.Min.X = me.Partition.X
@@ -92,7 +91,7 @@ func (me *Tree) insertSubTrees(element Item) (inserted bool) {
 			}
 			cfg := me.cfg
 			cfg.Height--
-			t = New(cfg, &subbounds)
+			t = New(cfg, subbounds)
 			me.Subtrees[i] = t
 		}
 
@@ -139,7 +138,7 @@ func (me *Tree) Find(element Item) (found Item, ok bool) {
 }
 
 func (me *Tree) FindOrInsert(element Item) (found Item, inserted bool) {
-	defer func(bounds *geom.Rect) {
+	defer func(bounds geom.Rect) {
 		if inserted {
 			me.Bounds.ExpandToContainRect(bounds)
 			me.Count++
@@ -147,7 +146,7 @@ func (me *Tree) FindOrInsert(element Item) (found Item, inserted bool) {
 	}(element.Bounds())
 
 	if !geom.RectsIntersect(element.Bounds(), me.UpperBounds) {
-		dbg("doesn't belong in %v", *me.UpperBounds)
+		dbg("doesn't belong in %v", me.UpperBounds)
 		return
 	}
 
@@ -224,13 +223,13 @@ func (me *Tree) Insert(element Item) (inserted bool) {
 	if geom.RectsIntersect(element.Bounds(), me.UpperBounds) {
 		str = "*"
 	}
-	dbg("inserting in %v%s", *me.Bounds, str)
+	dbg("inserting in %v%s", me.Bounds, str)
 
 	if !geom.RectsIntersect(me.UpperBounds, element.Bounds()) {
 		return
 	}
 
-	defer func(bounds *geom.Rect) {
+	defer func(bounds geom.Rect) {
 		me.Bounds.ExpandToContainRect(bounds)
 		me.Count++
 	}(element.Bounds())
@@ -294,7 +293,7 @@ func (me *Tree) Remove(element Item) (removed bool) {
 	defer func() {
 		if removed {
 			me.Count = 0
-			*me.Bounds = geom.NilRect()
+			me.Bounds = geom.NilRect()
 			if me.BigElements != nil {
 				me.Count += len(me.BigElements)
 				for elem := range me.BigElements {
@@ -432,7 +431,7 @@ func (me *Tree) Do(foo func(x Item)) {
 	}
 }
 
-func (me *Tree) CollectInside(bounds *geom.Rect, collection map[Item]bool) {
+func (me *Tree) CollectInside(bounds geom.Rect, collection map[Item]bool) {
 	if !geom.RectsIntersect(bounds, me.UpperBounds) {
 		return
 	}
@@ -463,16 +462,16 @@ func (me *Tree) CollectInside(bounds *geom.Rect, collection map[Item]bool) {
 	return
 }
 
-func (me *Tree) CollectIntersect(bounds *geom.Rect, collection map[Item]bool) (found bool) {
+func (me *Tree) CollectIntersect(bounds geom.Rect, collection map[Item]bool) (found bool) {
 	str := ""
 	if geom.RectsIntersect(bounds, me.UpperBounds) {
 		str = "*"
 	}
-	dbg("looking in %v%s", *me.UpperBounds, str)
+	dbg("looking in %v%s", me.UpperBounds, str)
 	Indent++
 	defer func() {
 		if found {
-			dbg("found in %v", *me.UpperBounds)
+			dbg("found in %v", me.UpperBounds)
 		}
 		Indent--
 	}()
@@ -488,7 +487,7 @@ func (me *Tree) CollectIntersect(bounds *geom.Rect, collection map[Item]bool) (f
 				found = true
 				str = "*"
 			}
-			dbg("big: %v%s", *elem.Bounds(), str)
+			dbg("big: %v%s", elem.Bounds(), str)
 		}
 	}
 
@@ -503,7 +502,7 @@ func (me *Tree) CollectIntersect(bounds *geom.Rect, collection map[Item]bool) (f
 				found = true
 				str = "*"
 			}
-			dbg("elems: %v%s", *elem.Bounds(), str)
+			dbg("elems: %v%s", elem.Bounds(), str)
 		}
 	}
 

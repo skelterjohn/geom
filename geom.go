@@ -6,7 +6,7 @@
 package geom
 
 type Bounded interface {
-	Bounds() (bounds *Rect)
+	Bounds() (bounds Rect)
 }
 
 type Transformable interface {
