@@ -17,7 +17,7 @@ func TestRectsIntersect(t *testing.T) {
 	if !r1.Max.QuadMM(r2.Min) {
 		t.Error("QuadMM")
 	}
-	if !r1.Contains(r2.Min) {
+	if !r1.ContainsCoord(r2.Min) {
 		t.Error("contains")
 	}
 	if !RectsIntersect(r1, r2) {
@@ -35,7 +35,7 @@ func TestRectsIntersect(t *testing.T) {
 	if !r1.Max.QuadMM(r2.Min) {
 		t.Error("QuadMM2")
 	}
-	if !r1.Contains(r2.Min) {
+	if !r1.ContainsCoord(r2.Min) {
 		t.Error("contains2")
 	}
 	if !RectsIntersect(r1, r2) {
