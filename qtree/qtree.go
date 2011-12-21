@@ -439,7 +439,6 @@ func (me *Tree) CollectInside(bounds geom.Rect, collection map[Item]bool) {
 		for elem := range me.BigElements {
 			if bounds.ContainsRect(elem.Bounds()) {
 				collection[elem] = true
-				return
 			}
 		}
 	}
@@ -447,7 +446,6 @@ func (me *Tree) CollectInside(bounds geom.Rect, collection map[Item]bool) {
 		for elem := range me.Elements {
 			if bounds.ContainsRect(elem.Bounds()) {
 				collection[elem] = true
-				return
 			}
 		}
 	}
@@ -462,59 +460,102 @@ func (me *Tree) CollectInside(bounds geom.Rect, collection map[Item]bool) {
 	return
 }
 
-func (me *Tree) CollectIntersect(bounds geom.Rect, collection map[Item]bool) (found bool) {
-	str := ""
-	if geom.RectsIntersect(bounds, me.UpperBounds) {
-		str = "*"
-	}
-	dbg("looking in %v%s", me.UpperBounds, str)
-	Indent++
-	defer func() {
-		if found {
-			dbg("found in %v", me.UpperBounds)
-		}
-		Indent--
-	}()
-
+func (me *Tree) RemoveInside(bounds geom.Rect, collection map[Item]bool) {
 	if !geom.RectsIntersect(bounds, me.UpperBounds) {
 		return
 	}
 	if me.BigElements != nil {
 		for elem := range me.BigElements {
-			str = ""
-			if geom.RectsIntersect(elem.Bounds(), bounds) {
-				collection[elem] = true
-				found = true
-				str = "*"
+			if bounds.ContainsRect(elem.Bounds()) {
+				delete(me.BigElements, elem)
+				if collection != nil {
+					collection[elem] = true
+				}
 			}
-			dbg("big: %v%s", elem.Bounds(), str)
 		}
 	}
-
 	if me.Elements != nil {
-		for elem, ok := range me.Elements {
-			if !ok {
-				panic("forgot to delete element properly")
+		for elem := range me.Elements {
+			if bounds.ContainsRect(elem.Bounds()) {
+				delete(me.Elements, elem)
+				if collection != nil {
+					collection[elem] = true
+				}
 			}
-			str = ""
-			if geom.RectsIntersect(bounds, elem.Bounds()) {
-				collection[elem] = true
-				found = true
-				str = "*"
-			}
-			dbg("elems: %v%s", elem.Bounds(), str)
 		}
-	}
-
-	if me.Subtrees[0] == nil {
-		dbg("no subtrees")
 	}
 
 	for _, t := range me.Subtrees {
 		if t == nil {
 			continue
 		}
-		found = t.CollectIntersect(bounds, collection) || found
+		t.RemoveInside(bounds, collection)
+	}
+
+	return
+}
+
+func (me *Tree) CollectIntersect(bounds geom.Rect, collection map[Item]bool) {
+	if !geom.RectsIntersect(bounds, me.UpperBounds) {
+		return
+	}
+	if me.BigElements != nil {
+		for elem := range me.BigElements {
+			if geom.RectsIntersect(elem.Bounds(), bounds) {
+				collection[elem] = true
+			}
+		}
+	}
+
+	if me.Elements != nil {
+		for elem := range me.Elements {
+			if geom.RectsIntersect(bounds, elem.Bounds()) {
+				collection[elem] = true
+			}
+		}
+	}
+
+	for _, t := range me.Subtrees {
+		if t == nil {
+			continue
+		}
+		t.CollectIntersect(bounds, collection)
+	}
+
+	return
+}
+
+func (me *Tree) RemoveIntersect(bounds geom.Rect, collection map[Item]bool) {
+	if !geom.RectsIntersect(bounds, me.UpperBounds) {
+		return
+	}
+	if me.BigElements != nil {
+		for elem := range me.BigElements {
+			if geom.RectsIntersect(elem.Bounds(), bounds) {
+				delete(me.BigElements, elem)
+				if collection != nil {
+					collection[elem] = true
+				}
+			}
+		}
+	}
+
+	if me.Elements != nil {
+		for elem := range me.Elements {
+			if geom.RectsIntersect(bounds, elem.Bounds()) {
+				delete(me.Elements, elem)
+				if collection != nil {
+					collection[elem] = true
+				}
+			}
+		}
+	}
+
+	for _, t := range me.Subtrees {
+		if t == nil {
+			continue
+		}
+		t.RemoveIntersect(bounds, collection)
 	}
 
 	return
