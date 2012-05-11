@@ -9,6 +9,17 @@ import (
 	"fmt"
 )
 
+func debugln(args ...interface{}) {
+	if false {
+		fmt.Println(args...)
+	}
+}
+func debugf(format string, args ...interface{}) {
+	if false {
+		fmt.Printf(format, args...)
+	}
+}
+
 func TestInsert(t *testing.T) {
 	p := &Polygon{}
 	p.AddVertex(Coord{0, 0})
@@ -37,12 +48,12 @@ func TestPolyTriangularize(t *testing.T) {
 	poly.AddVertex(Coord{1, 0})
 	tris, ok := poly.Triangles()
 	if ok {
-		fmt.Println()
+		debugln()
 		for _, tri := range tris {
-			fmt.Printf("triangle: %v\n", tri)
+			debugf("triangle: %v\n", tri)
 		}
 	} else {
-		fmt.Printf("No triangles for %v\n", poly)
+		debugf("No triangles for %v\n", poly)
 	}
 
 	poly = new(Polygon)
@@ -54,12 +65,12 @@ func TestPolyTriangularize(t *testing.T) {
 	poly.AddVertex(Coord{0, 3})
 	tris, ok = poly.Triangles()
 	if ok {
-		fmt.Println()
+		debugln()
 		for _, tri := range tris {
-			fmt.Printf("triangle: %v\n", tri)
+			debugf("triangle: %v\n", tri)
 		}
 	} else {
-		fmt.Printf("No triangles for %v\n", poly)
+		debugf("No triangles for %v\n", poly)
 	}
 
 	poly = new(Polygon)
@@ -69,12 +80,12 @@ func TestPolyTriangularize(t *testing.T) {
 	poly.AddVertex(Coord{1, 3})
 	tris, ok = poly.Triangles()
 	if ok {
-		fmt.Println()
+		debugln()
 		for _, tri := range tris {
-			fmt.Printf("triangle: %v\n", tri)
+			debugf("triangle: %v\n", tri)
 		}
 	} else {
-		fmt.Printf("No triangles for %v\n", poly)
+		debugf("No triangles for %v\n", poly)
 	}
 }
 //{44 736} {44 848} {88 848} {88 1044} {44 1044} {44 1244} {68 1244} {68 1068} {112 1068} {112 824} {68 824} {68 736}
@@ -98,12 +109,12 @@ func TestPiece(t *testing.T) {
 	}
 	tris, ok := poly.Triangles()
 	if ok {
-		fmt.Println()
+		debugln()
 		for _, tri := range tris {
-			fmt.Printf("triangle: %v\n", tri)
+			debugf("triangle: %v\n", tri)
 		}
 	} else {
-		fmt.Printf("No triangles for %v\n", poly)
+		debugf("No triangles for %v\n", poly)
 	}
 
 	vertices = []Coord{
@@ -127,11 +138,11 @@ func TestPiece(t *testing.T) {
 	}
 	tris, ok = poly.Triangles()
 	if ok {
-		fmt.Println()
+		debugln()
 		for _, tri := range tris {
-			fmt.Printf("triangle: %v\n", tri)
+			debugf("triangle: %v\n", tri)
 		}
 	} else {
-		fmt.Printf("No triangles for %v\n", poly)
+		debugf("No triangles for %v\n", poly)
 	}
 }

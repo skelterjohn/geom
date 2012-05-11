@@ -5,8 +5,8 @@
 package geom
 
 import (
-	"math"
 	"fmt"
+	"math"
 )
 
 type Rect struct {
@@ -48,7 +48,7 @@ func (r Rect) ContainsRect(o Rect) bool {
 	return r.ContainsCoord(o.Min) && r.ContainsCoord(o.Max)
 }
 
-func (r Rect) Translate(offset Coord) {
+func (r *Rect) Translate(offset Coord) {
 	r.Min = r.Min.Plus(offset)
 	r.Max = r.Max.Plus(offset)
 }
@@ -104,6 +104,29 @@ func RectsIntersect(r1, r2 Rect) bool {
 			return true
 		}
 		if min2 <= max1 && max2 >= max1 {
+			return true
+		}
+		return false
+	}
+	dbg("RI(%v, %v)", r1, r2)
+	xoverlap := ov(r1.Min.X, r1.Max.X, r2.Min.X, r2.Max.X)
+	yoverlap := ov(r1.Min.Y, r1.Max.Y, r2.Min.Y, r2.Max.Y)
+	dbg("%v %v", xoverlap, yoverlap)
+	return xoverlap && yoverlap
+}
+
+func RectsIntersectStrict(r1, r2 Rect) bool {
+	ov := func(min1, max1, min2, max2 float64) (overlap bool) {
+		if min1 < min2 && max1 > min2 {
+			return true
+		}
+		if min1 < max2 && max1 > max2 {
+			return true
+		}
+		if min2 < min1 && max2 > min1 {
+			return true
+		}
+		if min2 < max1 && max2 > max1 {
 			return true
 		}
 		return false
