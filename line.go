@@ -1,12 +1,11 @@
 package geom
 
-
 /*
 A line that goes through Intersection and has a normal Normal.
 */
 type Line struct {
 	Intersection Coord
-	Normal Coord
+	Normal       Coord
 }
 
 func LineIntersection(l1, l2 Line) (p Coord) {

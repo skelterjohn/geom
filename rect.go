@@ -138,6 +138,14 @@ func RectsIntersectStrict(r1, r2 Rect) bool {
 	return xoverlap && yoverlap
 }
 
+func RectsIntersection(r1, r2 Rect) (ri Rect) {
+	ri.Min.X = math.Max(r1.Min.X, r2.Min.X)
+	ri.Min.Y = math.Max(r1.Min.Y, r2.Min.Y)
+	ri.Max.X = math.Min(r1.Max.X, r2.Max.X)
+	ri.Max.Y = math.Min(r1.Max.Y, r2.Max.Y)
+	return
+}
+
 func RectsEqual(r1, r2 Rect) bool {
 	if !r1.Min.EqualsCoord(r2.Min) {
 		return false

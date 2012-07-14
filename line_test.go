@@ -7,18 +7,18 @@ import (
 
 type LineIntersectionTest struct {
 	l1, l2 Line
-	p Coord
+	p      Coord
 }
 
-var itests = []LineIntersectionTest {
+var itests = []LineIntersectionTest{
 	{
 		Line{
 			Intersection: Coord{0, 0},
-			Normal: Coord{0, 1},
+			Normal:       Coord{0, 1},
 		},
 		Line{
 			Intersection: Coord{1, 1},
-			Normal: Coord{1, 0},
+			Normal:       Coord{1, 0},
 		},
 		Coord{0, 1},
 	},

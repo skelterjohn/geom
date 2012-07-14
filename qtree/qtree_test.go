@@ -1,9 +1,9 @@
 package qtree
 
 import (
-	"testing"
 	"fmt"
 	"github.com/skelterjohn/geom"
+	"testing"
 )
 
 func TestInsertCollect(t *testing.T) {

@@ -5,8 +5,8 @@
 package geom
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func debugln(args ...interface{}) {
@@ -88,6 +88,7 @@ func TestPolyTriangularize(t *testing.T) {
 		debugf("No triangles for %v\n", poly)
 	}
 }
+
 //{44 736} {44 848} {88 848} {88 1044} {44 1044} {44 1244} {68 1244} {68 1068} {112 1068} {112 824} {68 824} {68 736}
 func TestPiece(t *testing.T) {
 	vertices := []Coord{

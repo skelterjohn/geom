@@ -5,8 +5,8 @@
 package geom
 
 import (
-	"testing"
 	"fmt"
+	"testing"
 )
 
 func TestVertexAngle(t *testing.T) {
