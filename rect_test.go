@@ -29,13 +29,13 @@ func TestRectsIntersect(t *testing.T) {
 
 	Debug = false
 
-	if !r1.Min.QuadPP(r2.Min) {
-		t.Error("QuadPP2")
+	if !r1.Min.QuadMP(r2.Min) {
+		t.Error("QuadMP2")
 	}
 	if !r1.Max.QuadMM(r2.Min) {
 		t.Error("QuadMM2")
 	}
-	if !r1.ContainsCoord(r2.Min) {
+	if r1.ContainsCoord(r2.Min) {
 		t.Error("contains2")
 	}
 	if !RectsIntersect(r1, r2) {
