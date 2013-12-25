@@ -35,8 +35,9 @@ func (p *Coord) Translate(offset Coord) {
 }
 
 func (p *Coord) Rotate(rad float64) {
-	p.X = p.X*math.Cos(rad) - p.Y*math.Sin(rad)
-	p.Y = p.X*math.Sin(rad) + p.Y*math.Cos(rad)
+	p.X, p.Y =
+		p.X*math.Cos(rad)-p.Y*math.Sin(rad),
+		p.X*math.Sin(rad)+p.Y*math.Cos(rad)
 }
 
 func (p *Coord) RotateLeft() {
